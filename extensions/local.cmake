@@ -1,2 +1,5 @@
 set(EXTENSIONS_DIR ${CMAKE_CURRENT_LIST_DIR}/superbuild-extensions)
+include(${CMAKE_CURRENT_LIST_DIR}/controllers/callm_wbc_controller.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/plugins/mc_triorb.cmake)
+set(WITH_TRIORB ON CACHE BOOL "" FORCE)
+set(WITH_UR5E ON CACHE BOOL "" FORCE)
