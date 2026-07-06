@@ -93,7 +93,7 @@ if(MC_RTC_SUPERBUILD_DEFAULT_PYTHON)
   if(NOT MC_RTC_SUPERBUILD_PRE_COMMIT)
     # Install pre-commit with pip
     execute_process(
-      COMMAND ${MC_RTC_SUPERBUILD_DEFAULT_PYTHON} -m pip install pre-commit
+      COMMAND ${MC_RTC_SUPERBUILD_DEFAULT_PYTHON} -m pipx install pre-commit
               COMMAND_ERROR_IS_FATAL ANY
     )
     find_program(
