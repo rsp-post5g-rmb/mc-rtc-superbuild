@@ -65,13 +65,18 @@ endfunction()
 # * CATKIN_BUILD Init/Build the workspace for/with catkin
 # * CATKIN_BUILD_ARGS <args...> Arguments for catkin build
 # * PARALLEL_JOBS <num> number of parallel jobs to use when building this (0 lets Ninja decice, make will build on a single core)
+# * COLCON_PATHS <paths...> Explicit package paths (relative to DIR) passed to `colcon build --paths`. Only
+#   applies for ROS2/colcon. Required when a checked-out project nests one package's source directory inside
+#   another package's directory (e.g. a metapackage containing its own members as subdirectories): colcon's
+#   default recursive discovery stops descending as soon as it finds a package.xml, so nested packages are
+#   silently skipped unless their paths are listed explicitly here.
 #
 # CATKIN_MAKE/CATKIN_BUILD are mutually exclusive and only apply for ROS1. For ROS2, colcon is always used
 #
 function(CreateCatkinWorkspace)
   set(options CATKIN_MAKE CATKIN_BUILD)
   set(oneValueArgs ID DIR PARALLEL_JOBS)
-  set(multiValueArgs CATKIN_BUILD_ARGS)
+  set(multiValueArgs CATKIN_BUILD_ARGS COLCON_PATHS)
   cmake_parse_arguments(
     CC_WORKSPACE_ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
   )
@@ -182,10 +187,15 @@ function(CreateCatkinWorkspace)
     set(BUILD_COMMAND_DEPENDS DEPENDS ${SKIPLIST_STAMP_FILE})
   else()
     # FIXME Add support for skiplist
+    set(COLCON_PATHS_ARGS "")
+    if(CC_WORKSPACE_ARGS_COLCON_PATHS)
+      set(COLCON_PATHS_ARGS --paths ${CC_WORKSPACE_ARGS_COLCON_PATHS})
+    endif()
     set(BUILD_COMMAND
         ${CMAKE_COMMAND} -E chdir ${DIR} ${COMMAND_PREFIX} colcon build --merge-install
-        --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=$<CONFIG>
-        -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ${CC_WORKSPACE_ARGS_CATKIN_BUILD_ARGS}
+        --executor sequential ${COLCON_PATHS_ARGS} --cmake-args
+        -DCMAKE_BUILD_TYPE=$<CONFIG> -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+        ${CC_WORKSPACE_ARGS_CATKIN_BUILD_ARGS}
     )
   endif()
   set(STAMP_FILE "${STAMP_DIR}/${ID}.stamp")

@@ -11,11 +11,16 @@ if(WITH_ROS_SUPPORT)
     CATKIN_BUILD_ARGS -DCATKIN_ENABLE_TESTING:BOOL=OFF
                       -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   )
+  # mc_rtc_ros nests mc_rtc_rviz_panel and mc_rtc_ticker inside its own (metapackage)
+  # source directory. colcon's default package discovery stops descending once it finds
+  # a package.xml, so without COLCON_PATHS these two packages are silently never built.
   CreateCatkinWorkspace(
     ID mc_rtc_ws
     DIR "catkin_ws"
     CATKIN_BUILD
     CATKIN_BUILD_ARGS -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    COLCON_PATHS src/mc_rtc_ros src/mc_rtc_ros/mc_rtc_rviz_panel
+                 src/mc_rtc_ros/mc_rtc_ticker
     PARALLEL_JOBS 8
   )
 endif()
