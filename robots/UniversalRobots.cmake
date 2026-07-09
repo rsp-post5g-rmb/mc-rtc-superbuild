@@ -5,25 +5,21 @@ option(WITH_UR3E "Build UR3E support" OFF)
 option(WITH_UR5E "Build UR5E support" OFF)
 option(WITH_UR10 "Build UR10 support" OFF)
 
-function(AddAptRepository PPA)
-  execute_process(
-    COMMAND bash -c
-            "${SUDO_CMD} add-apt-repository ${PPA} -y && ${SUDO_CMD} apt-get update"
-    RESULT_VARIABLE BASH_FAILED
-  )
-  if(BASH_FAILED)
-    message(FATAL_ERROR "Failed to add ${PPA} mirror")
-  endif()
-endfunction()
-
 if(WITH_MC_RTDE)
   AptInstall(libcap2-bin) # For setcap
 
-  # For CB>=3 support
+  # For CB>=3 support. Built from source instead of the ppa:sdurobotics/ur-rtde PPA,
+  # which requires querying Launchpad's API (an endpoint known to time out
+  # intermittently) even when the actual package mirror is reachable.
+  set(MC_RTDE_EXTRA_DEPENDS)
   find_package(ur_rtde QUIET)
   if(NOT ${ur_rtde_FOUND})
-    addaptrepository("ppa:sdurobotics/ur-rtde")
-    AptInstall(librtde librtde-dev)
+    AddProject(
+      ur_rtde
+      GIT_REPOSITORY https://gitlab.com/sdurobotics/ur_rtde.git
+      GIT_TAG origin/master
+    )
+    list(APPEND MC_RTDE_EXTRA_DEPENDS ur_rtde)
   endif()
 
   # For CB<=2 support
@@ -37,7 +33,7 @@ if(WITH_MC_RTDE)
     mc_rtde
     GITHUB isri-aist/mc_rtde
     GIT_TAG origin/main
-    DEPENDS mc_rtc ur_modern_driver
+    DEPENDS mc_rtc ur_modern_driver ${MC_RTDE_EXTRA_DEPENDS}
   )
 endif()
 
