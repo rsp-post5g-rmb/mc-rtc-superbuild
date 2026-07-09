@@ -18,6 +18,10 @@ if(WITH_MC_RTDE)
       ur_rtde
       GIT_REPOSITORY https://gitlab.com/sdurobotics/ur_rtde.git
       GIT_TAG origin/master
+      # PYTHON_BINDINGS defaults to ON and installs into the system's
+      # dist-packages regardless of CMAKE_INSTALL_PREFIX, which requires root
+      # and isn't what we want in the superbuild's install prefix.
+      CMAKE_ARGS -DPYTHON_BINDINGS:BOOL=OFF
     )
     list(APPEND MC_RTDE_EXTRA_DEPENDS ur_rtde)
   endif()
