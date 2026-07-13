@@ -58,8 +58,9 @@ gripper_posture:
 # global mc_rtc.yaml (see tests/etc/mc_rtc.yaml). If the module/plugin are absent
 # the controller runs without the gripper.
 gripper:
-  enable: true
-  model: Robotiq2f85Gripper        # or Robotiq2f140Gripper
+  simulate: false                  # do not load the mc_robot_tools gripper model
+  command: true                    # still drive the real gripper via the plugin
+  model: Robotiq2f85Gripper        # or Robotiq2f140Gripper (used only when simulate: true)
   set_opening_call: "RobotiqGripper::setOpening"
 
 # ---- ROS2 command client ---------------------------------------------------
