@@ -1,0 +1,32 @@
+MainRobot: UR5eFloatingBase
+Enabled: CallmWbcController
+feedback: none
+
+ObserverPipelines:
+  - name: CallmObservers
+    gui: true
+    log: true
+    observers:
+      - type: VisualOdometry     # triorb base from VO + reconstruct ur5e floating base
+        update: true
+        gui: true
+        # required: false -> load the controller even where the observer library is not
+        # installed (e.g. the isolated smoke test); on hardware/superbuild it loads and
+        # appears in the pipeline summary. A warning is logged if it is missing.
+        required: false
+        robot: triorb
+        topic: "/robot_pose_slam"
+        expected_frame_id: ""    # empty = skip header.frame_id check
+        world_X_map:             # pose of the VO/map frame in the controller world
+          translation: [0.0, 0.0, 0.0]
+          rotation: [0.0, 0.0, 0.0]   # roll, pitch, yaw (rad); this rig zeroes map==world per episode
+        height: 0.0
+        planar: true
+        timeout: 0.5             # s; older than this -> observer fails -> last pose held
+        max_jump: 0.5            # m; larger step accepted (loop closure) but flagged; 0 = off
+        planar_joints: [base_x, base_y, base_yaw]
+        attach:                  # Option 1: reconstruct the arm floating base
+          robot: ur5e
+          mount_body: mount
+      - type: Encoder           # ur5e arm joints from encoders
+        update: true  
