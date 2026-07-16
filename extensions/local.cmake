@@ -8,3 +8,4 @@ include(${CMAKE_CURRENT_LIST_DIR}/tools/mc_robot_tools.cmake)             # grip
 include(${CMAKE_CURRENT_LIST_DIR}/plugins/mc_robotiq.cmake)              # gripper plugin
 include(${CMAKE_CURRENT_LIST_DIR}/plugins/mc_triorb.cmake)              # base plugin
 include(${CMAKE_CURRENT_LIST_DIR}/controllers/callm_wbc_controller.cmake) # the controller
+include(${CMAKE_CURRENT_LIST_DIR}/observers/mc_visual_odometry_observer.cmake) # VO observer
